@@ -44,6 +44,11 @@ export class Mailer {
     this.$transport = $createTransport(service, opts)
   }
 
+  use (...args) {
+    this.$transport.use(...args)
+    return this
+  }
+
   send (opts) {
     return new Promise((resolve, reject) => {
       this.$transport.sendMail(opts, (err, info) => {
