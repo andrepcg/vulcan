@@ -17,7 +17,7 @@ export const options = [{
 }]
 
 export const action = (done) => ({ port, banner }) => {
-  const timeout = 30000
+  const timeout = 3000
   const server = app.listen(port, () => {
     if (banner) {
       console.log(logo)
