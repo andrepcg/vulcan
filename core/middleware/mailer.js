@@ -1,12 +1,15 @@
+import { resolve } from 'path'
 import Promise from 'bluebird'
 import nodemailer from 'nodemailer'
-import stubTransport from 'nodemailer-stub-transport'
+import { htmlToText } from 'nodemailer-html-to-text'
 import { defaultsDeep, isFunction } from 'lodash'
-
-import config from 'core/config'
+import cons from 'co-views'
+import consoleTransport from 'core/console-transport'
+import fileTransport from 'core/file-transport'
 
 const services = {
-  stub: stubTransport,
+  console: consoleTransport,
+  file: fileTransport,
   mailgun: {
     host: 'smtp.mailgun.org',
     port: 587
@@ -40,8 +43,9 @@ const $createTransport = (service, opts) => {
 }
 
 export class Mailer {
-  constructor (service, opts) {
+  constructor (service, opts, views) {
     this.$transport = $createTransport(service, opts)
+    this.$render = cons(resolve('app/views'), defaultsDeep({}, views, { ext: views.extension }))
   }
 
   use (...args) {
@@ -49,16 +53,24 @@ export class Mailer {
     return this
   }
 
-  send (opts) {
+  send (temp, opts) {
     return new Promise((resolve, reject) => {
-      this.$transport.sendMail(opts, (err, info) => {
-        if (err) {
-          return reject(err)
-        }
-        return resolve(info)
-      })
+      const locals = opts.locals || {}
+      delete opts.locals
+      this.$render(temp, defaultsDeep({}, opts, locals))
+        .then((html) => {
+          this.$transport.sendMail(defaultsDeep({}, opts, { html, xMailer: false }), (err, info) => {
+            if (err) {
+              return reject(err)
+            }
+            return resolve(info)
+          })
+        })
     })
   }
 }
 
-export default new Mailer(config.get('mail.service'), config.get(`mail.services[${config.get('mail.service')}]`, null))
+export default ({ service, options, views }) => function * (next) {
+  this.mailer = new Mailer(service, options, views).use('compile', htmlToText())
+  yield next
+}

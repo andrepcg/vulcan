@@ -1,26 +1,26 @@
 export default {
-  service: 'stub',
+  service: 'file',
 
   services: {
     gmail: {
-      user: '',
-      pass: ''
+      user: 'example@gmail.com',
+      pass: 'hunter2'
     },
     yahoo: {
-      user: '',
-      pass: ''
+      user: 'example@yahoo.com',
+      pass: 'hunter2'
     },
     mailgun: {
-      user: '',
-      pass: ''
+      user: 'postmaster@example.com',
+      pass: 'hunter2'
     },
     mandrill: {
-      user: '',
-      pass: ''
+      user: 'postmaster@example.com',
+      pass: 'hunter2'
     },
     postmark: {
-      user: '',
-      pass: ''
+      user: 'postmaster@example.com',
+      pass: 'hunter2'
     }
   }
 }
