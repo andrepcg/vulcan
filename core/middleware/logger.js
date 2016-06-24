@@ -1,8 +1,11 @@
 import Promise from 'bluebird'
 import morgan from 'morgan'
 
-export default (format, options) => function * (next) {
+export default (format, options) => {
   const logger = Promise.promisify(morgan(format, options))
-  yield logger(this.req, this.res)
-  yield next
+
+  return function * (next) {
+    yield logger(this.req, this.res)
+    next && (yield next)
+  }
 }
