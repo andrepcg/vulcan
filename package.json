@@ -11,7 +11,6 @@
     "@niftyco/config": "~1.0.0",
     "@niftyco/env": "~1.0.0",
     "app-module-path": "~1.1.0",
-    "args": "~1.2.1",
     "bcrypt": "~0.8.6",
     "bookshelf": "~0.9.5",
     "bookshelf-paranoia": "~0.7.0",
