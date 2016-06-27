@@ -7,6 +7,13 @@ export function * list () {
 
 export function * create () {
   const user = yield User.create(this.request.body)
+  yield this.mailer.send('emails/welcome', {
+    to: user.get('email'),
+    subject: 'Welcome!',
+    locals: {
+      name: user.get('name')
+    }
+  })
 
   return yield this.send({ user }, 201)
 }

@@ -7,6 +7,7 @@ export default Model.extend({
   tableName: 'users',
   hidden: ['password'],
   validate: {
+    name: joi.string().required(),
     email: joi.string().email().required(),
     password: joi.string().required()
   },

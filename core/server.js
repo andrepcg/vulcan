@@ -36,11 +36,7 @@ app.use(responseTime())
 if (config.get('logs.enabled', true)) {
   app.use(logger(config.get('logs.format'), config.get('logs.options')))
 }
-app.use(mailer({
-  service: config.get('mail.service'),
-  options: config.get(`mail.services[${config.get('mail.service')}]`, null),
-  views: config.get('app.views')
-}))
+app.use(mailer(config.get('mail'), config.get('app.views')))
 app.use(methodOverride('_method'))
 app.use(views(resolve('app/views'), config.get('app.views')))
 app.use(noSlash())

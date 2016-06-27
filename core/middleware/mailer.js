@@ -4,47 +4,22 @@ import nodemailer from 'nodemailer'
 import { htmlToText } from 'nodemailer-html-to-text'
 import { defaultsDeep, isFunction } from 'lodash'
 import cons from 'co-views'
-import consoleTransport from 'core/console-transport'
-import fileTransport from 'core/file-transport'
+import services from 'core/mailer-services'
 
-const services = {
-  console: consoleTransport,
-  file: fileTransport,
-  mailgun: {
-    host: 'smtp.mailgun.org',
-    port: 587
-  },
-  mandrill: {
-    host: 'smtp.mandrillapp.com',
-    port: 587
-  },
-  postmark: {
-    host: 'smtp.postmarkapp.com',
-    port: 2525
-  },
-  yahoo: {
-    host: 'smtp.mail.yahoo.com',
-    port: 465,
-    secure: true
-  },
-  gmail: {
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true
-  }
-}
+const $createTransport = (options) => {
+  const transport = services[options.service]
+  const opts = options.services[options.service]
 
-const $createTransport = (service, opts) => {
-  const transport = services[service]
   if (isFunction(transport)) {
     return nodemailer.createTransport(transport(opts))
   }
-  return nodemailer.createTransport(defaultsDeep({}, services[service], { auth: opts }))
+  return nodemailer.createTransport(defaultsDeep({}, transport, { auth: opts }))
 }
 
 export class Mailer {
-  constructor (service, opts, views) {
-    this.$transport = $createTransport(service, opts)
+  constructor (options, views) {
+    this.$from = options.from
+    this.$transport = $createTransport(options)
     this.$render = cons(resolve('app/views'), defaultsDeep({}, views, { ext: views.extension }))
   }
 
@@ -53,24 +28,23 @@ export class Mailer {
     return this
   }
 
-  send (temp, opts) {
+  send (view, options) {
     return new Promise((resolve, reject) => {
-      const locals = opts.locals || {}
-      delete opts.locals
-      this.$render(temp, defaultsDeep({}, opts, locals))
-        .then((html) => {
-          this.$transport.sendMail(defaultsDeep({}, opts, { html, xMailer: false }), (err, info) => {
-            if (err) {
-              return reject(err)
-            }
-            return resolve(info)
-          })
+      const locals = options.locals || {}
+      delete options.locals
+      this.$render(view, defaultsDeep({}, options, locals)).then((html) => {
+        this.$transport.sendMail(defaultsDeep({}, options, { from: this.$from, html, xMailer: false }), (err, info) => {
+          if (err) {
+            return reject(err)
+          }
+          return resolve(info)
         })
+      })
     })
   }
 }
 
-export default ({ service, options, views }) => function * (next) {
-  this.mailer = new Mailer(service, options, views).use('compile', htmlToText())
+export default (options, views) => function * (next) {
+  this.mailer = new Mailer(options, views).use('compile', htmlToText())
   yield next
 }

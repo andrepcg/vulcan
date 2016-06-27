@@ -1,5 +1,6 @@
 export default {
   service: 'file',
+  from: 'Your App <you@example.com>',
 
   services: {
     gmail: {

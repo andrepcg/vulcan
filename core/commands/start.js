@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import env from '@niftyco/env'
 import config from 'core/config'
 import { logo } from 'core/vulcan'
+import { db } from 'core/bookshelf'
 import app from 'core/server'
 
 export const command = 'start'
@@ -30,6 +31,7 @@ export const action = (done) => ({ port, banner }) => {
 
   process.on('SIGINT', () => {
     console.log(`\n  ${chalk.red('Shutting down server.')}\n`)
+    db.destroy()
     server.close((e) => process.exit(1))
 
     setTimeout(() => {
