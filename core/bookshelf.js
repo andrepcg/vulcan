@@ -26,6 +26,7 @@ bookshelf.plugin(require('bookshelf-paranoia'))
 const Model = bookshelf.Model.extend({
   hasTimestamps: ['created_at', 'updated_at', 'deleted_at'],
   softDelete: true,
+  hidden: ['deletedAt'],
   constructor (...args) {
     bookshelf.Model.apply(this, args)
     if (this.validate) {
