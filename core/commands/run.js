@@ -10,7 +10,6 @@ export const options = [{
   flags: '-e, --env <env>',
   description: 'set environment to run gulp in'
 }]
-process.env.PATH = `./node_modules/.bin/:${process.env.PATH}`
 
 export const action = () => (task = 'default', { silent = false, env = 'development' }) => {
   const args = [task]

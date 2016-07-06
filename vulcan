@@ -2,6 +2,7 @@
 
 require('babel-core/register')()
 require('app-module-path').addPath(require('path').resolve(__dirname))
+process.env.PATH = `./node_modules/.bin/:${process.env.PATH}`
 
 const program = require('commander')
 const { db } = require('core/bookshelf')
