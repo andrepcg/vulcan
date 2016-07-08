@@ -15,6 +15,9 @@ commands.map((cmd) => {
   if (cmd.options) {
     cmd.options.map((opt) => command.option(opt.flags, opt.description, opt.default))
   }
+  if (cmd.alias) {
+    command.alias(cmd.alias)
+  }
   command.action(cmd.action(db.destroy))
 })
 
