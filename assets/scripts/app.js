@@ -1,1 +1,1 @@
-console.log('vulcan')
+console.log('Welcome to Vulcan')

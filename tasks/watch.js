@@ -1,3 +1,4 @@
 export default function () {
-  console.log('file changed!')
+  this.watch(['assets/styles/**/*.scss'], ['styles'])
+  this.watch(['assets/scripts/**/*.js'], ['scripts'])
 }
