@@ -8,7 +8,7 @@ export const options = [{
   description: 'Run seeds after reset'
 }]
 
-export const action = (done) => ({ seed = false }) => {
+export const action = () => ({ seed = false }) => {
   db.migrate.forceFreeMigrationsLock()
   .then(() => db.migrate._listCompleted())
   .then((completed) => db.migrate._waterfallBatch(0, completed.reverse(), 'down'))
@@ -32,5 +32,5 @@ export const action = (done) => ({ seed = false }) => {
       })
     }
   })
-  .then(() => done())
+  .then(() => db.destroy())
 }

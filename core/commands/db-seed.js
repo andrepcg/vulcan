@@ -4,7 +4,7 @@ import { db } from 'core/bookshelf'
 export const command = 'db:seed [files...]'
 export const description = 'seed the database with records'
 
-export const action = (done) => (files) => {
+export const action = () => (files) => {
   const seed = files.length > 0 ? db.seed._runSeeds(files) : db.seed.run()
 
   seed.spread((seeds) => {
@@ -14,6 +14,6 @@ export const action = (done) => (files) => {
       console.log(`Ran ${seeds.length} seed files:`)
       seeds.map((file) => console.log(basename(file, '.js')))
     }
-    done()
+    db.destroy()
   })
 }

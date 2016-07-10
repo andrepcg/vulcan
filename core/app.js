@@ -4,6 +4,7 @@ import env from '@niftyco/env'
 import koa from 'koa'
 import Router from 'koa-router'
 import views from 'koa-views'
+import serve from 'koa-static'
 import bodyParser from 'koa-bodyparser'
 import cors from 'koa-cors'
 import conditionalGet from 'koa-conditional-get'
@@ -36,6 +37,7 @@ app.use(responseTime())
 if (config.get('logs.enabled', true)) {
   app.use(logger(config.get('logs.format'), config.get('logs.options')))
 }
+app.use(serve(resolve('public')))
 app.use(mailer(config.get('mail'), config.get('app.views')))
 app.use(methodOverride('_method'))
 app.use(views(resolve('app/views'), config.get('app.views')))

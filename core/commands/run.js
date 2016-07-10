@@ -7,8 +7,7 @@ export const options = [{
   description: 'set environment to run gulp in'
 }]
 
-export const action = (done) => (task = 'default', { silent = false, env = 'development' }) => {
+export const action = () => (task = 'index', { env = 'development' }) => {
   process.env.NODE_ENV = env
-
-  gulp.on('stop', (e) => done()).start(task)
+  gulp.on('stop', (e) => process.exit(0)).start(task)
 }

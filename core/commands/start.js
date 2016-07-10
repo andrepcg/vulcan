@@ -1,6 +1,7 @@
 import env from '@niftyco/env'
 import config from 'core/config'
 import server from 'core/server'
+import gulp from 'core/gulp'
 
 export const command = 'start'
 export const description = 'start your app'
@@ -13,4 +14,6 @@ export const options = [{
   description: "don't show the banner"
 }]
 
-export const action = () => ({ port, banner }) => server(port, banner)
+const callback = env.get('node_env', 'development') === 'development' ? () => gulp.start('index') : () => {}
+
+export const action = () => ({ port, banner }) => server(port, banner, callback)
