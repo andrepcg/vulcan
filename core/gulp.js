@@ -1,5 +1,6 @@
 import { resolve } from 'path'
 import { readdirSync } from 'fs'
+import env from '@niftyco/env'
 import chalk from 'chalk'
 import prettyTime from 'pretty-hrtime'
 import gulp from 'gulp'
@@ -20,6 +21,8 @@ const formatError = (e) => {
 
   return new Error(String(e.err)).stack
 }
+
+gulp.environment = env.get('node_env', 'development')
 
 readdirSync(resolve('tasks'))
   .map((file) => ({ name: file.replace(/^(.+)\.js/, '$1'), task: require(resolve(`tasks/${file}`)) }))

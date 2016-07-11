@@ -1,5 +1,4 @@
 import { resolve } from 'path'
-import env from '@niftyco/env'
 import webpack from 'webpack-stream'
 import livereload from 'gulp-livereload'
 import UglifyJs from 'webpack/lib/optimize/UglifyJsPlugin'
@@ -49,7 +48,7 @@ export default function () {
     ]
   }
 
-  if (env.get('node_env', false) === 'production') {
+  if (this.environment === 'production') {
     config.plugins.push(new DedupePlugin())
     config.plugins.push(new OccurrenceOrderPlugin())
     config.plugins.push(new UglifyJs({ compress: { warnings: false } }))
