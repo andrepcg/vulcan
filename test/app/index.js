@@ -24,7 +24,7 @@ describe('Vulcan Application', () => {
         .end((err, res) => {
           const $ = cheerio.load(res.text)
           expect(err).to.be.null
-          expect($('body > h1').text()).to.equal('Hello World')
+          expect($('h1').text()).to.equal('Hello World')
           done()
         })
     })
