@@ -47,7 +47,7 @@ app.use(eTag())
 app.use(compress())
 app.use(bodyParser())
 app.use(helmet())
-app.use(cors())
+app.use(cors(config.get('app.cors', undefined)))
 app.use(sender())
 
 readdirSync(resolve('app/hooks'))
