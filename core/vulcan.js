@@ -1,7 +1,7 @@
 import { pad } from 'lodash'
 import chalk from 'chalk'
 
-export const version = '0.1.0-alpha.1'
+export const version = '0.1.0-alpha.2'
 export const logo = `
         ${chalk.red('▐▓')}
         ${chalk.red('▓▓▓▄')}
