@@ -5,6 +5,7 @@ import chalk from 'chalk'
 import prettyTime from 'pretty-hrtime'
 import gulp from 'gulp'
 import gutil from 'gulp-util'
+import { isArray } from 'lodash'
 
 const formatError = (e) => {
   if (!e.err) {
@@ -26,7 +27,10 @@ gulp.environment = env.get('node_env', 'development')
 
 readdirSync(resolve('tasks'))
   .map((file) => ({ name: file.replace(/^(.+)\.js/, '$1'), task: require(resolve(`tasks/${file}`)) }))
-  .map(({ name, task }) => gulp.task(name, (task.default ? task.default : task).bind(gulp)))
+  .map(({ name, task }) => {
+    const run = (task.default ? task.default : task)
+    gulp.task(name, isArray(run) ? run : run.bind(gulp))
+  })
 
 gulp.on('task_start', (e) => {
   gutil.log(`Starting ${chalk.cyan(e.task)}...`)
