@@ -3,7 +3,7 @@ import { writeFileSync } from 'fs'
 import { upperFirst } from 'lodash'
 import { singularize, pluralize } from 'inflection'
 
-export const command = 'gen:resource <model>'
+export const command = 'make:resource <model>'
 export const description = 'create a resource for a model'
 
 const template = (Model, model) => `import ${Model} from 'app/models/${model}'
@@ -40,11 +40,10 @@ export function * destroy () {
 }
 `
 
-export const action = (done) => (resource) => {
+export const action = () => (resource) => {
   const model = singularize(resource.toLowerCase())
   const Model = upperFirst(model)
   const filename = `${pluralize(model)}.js`
   writeFileSync(resolve(`app/controllers/${filename}`), template(Model, model))
   console.log(`Created ${pluralize(model)} resource`)
-  done()
 }

@@ -3,28 +3,28 @@ import { expect } from 'chai'
 import request from 'supertest'
 import cheerio from 'cheerio'
 import { db } from 'core/bookshelf'
-import server from 'core/server'
+import app from 'core/app'
 
-let app = null
+let req = null
 
 describe('Vulcan Application', () => {
   before(() => {
     return db.migrate.latest()
       .then(() => db.seed.run())
       .then(() => {
-        app = request(server.listen())
+        req = request(app.listen())
       })
   })
 
   describe('GET /', () => {
     it('should return Hello World', (done) => {
-      app.get('/')
+      req.get('/')
         .expect('Content-Type', /text\/html/)
         .expect(200)
         .end((err, res) => {
           const $ = cheerio.load(res.text)
           expect(err).to.be.null
-          expect($('body > h1').text()).to.equal('Hello World')
+          expect($('h1').text()).to.equal('Hello World')
           done()
         })
     })
@@ -32,7 +32,7 @@ describe('Vulcan Application', () => {
 
   describe('GET /users', () => {
     it('should return two users', (done) => {
-      app.get('/users')
+      req.get('/users')
         .expect('Content-Type', /json/)
         .expect(200)
         .end((err, res) => {
@@ -47,7 +47,7 @@ describe('Vulcan Application', () => {
 
   describe('POST /users', () => {
     it('should create a user', () => {
-      app.post('/users')
+      req.post('/users')
         .send({ email: 'test@test.com', password: 'test' })
         .expect(200)
         .end((err, res) => {
@@ -58,7 +58,7 @@ describe('Vulcan Application', () => {
     })
 
     it('should return bad request for invalid data', () => {
-      app.post('/users')
+      req.post('/users')
         .send({ email: 'noop' })
         .expect(400)
         .end((err, res) => {
@@ -71,7 +71,7 @@ describe('Vulcan Application', () => {
 
   describe('GET /users/1', () => {
     it('should return the user with id #1', () => {
-      app.get('/users/1')
+      req.get('/users/1')
         .expect('Content-Type', /json/)
         .expect(200)
         .end((err, res) => {
@@ -85,7 +85,7 @@ describe('Vulcan Application', () => {
 
   describe('PUT /users/3', () => {
     it('should update user #3', () => {
-      app.put('/users/3')
+      req.put('/users/3')
         .send({ email: 'test@example.com' })
         .expect(200)
         .end((err, res) => {
@@ -99,7 +99,7 @@ describe('Vulcan Application', () => {
 
   describe('DELETE /users/3', () => {
     it('should delete user #3', () => {
-      app.delete('/users/3')
+      req.delete('/users/3')
         .expect(200)
         .end((err, res) => {
           expect(err).to.be.null
@@ -110,7 +110,7 @@ describe('Vulcan Application', () => {
 
   describe('GET /users/5', () => {
     it('should return 404 error', () => {
-      app.get('/users/5')
+      req.get('/users/5')
         .expect(404)
         .end()
     })

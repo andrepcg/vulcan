@@ -2,7 +2,7 @@ import { resolve } from 'path'
 import { writeFileSync } from 'fs'
 import moment from 'moment'
 
-export const command = 'gen:migration <name>'
+export const command = 'make:migration <name>'
 export const description = 'create a new migration'
 export const options = [{
   flags: '-t, --table [name]',
@@ -19,9 +19,8 @@ const template = (table = 'table') => `export const up = ({ schema, raw, fn }) =
 export const down = ({ schema }) => schema.dropTable('${table}')
 `
 
-export const action = (done) => (name, { table }) => {
+export const action = () => (name, { table }) => {
   const filename = `${moment().format('YYYYMMDDHHmmss')}_${name}.js`
   writeFileSync(resolve(`database/migrations/${filename}`), template(table))
   console.log(`Created ${filename}`)
-  done()
 }

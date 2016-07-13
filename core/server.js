@@ -1,60 +1,34 @@
-import { resolve } from 'path'
-import { readdirSync } from 'fs'
+import { repeat } from 'lodash'
+import chalk from 'chalk'
 import env from '@niftyco/env'
-import koa from 'koa'
-import Router from 'koa-router'
-import views from 'koa-views'
-import bodyParser from 'koa-bodyparser'
-import cors from 'koa-cors'
-import conditionalGet from 'koa-conditional-get'
-import eTag from 'koa-etag'
-import compress from 'koa-compress'
-import helmet from 'koa-helmet'
-import methodOverride from 'koa-methodoverride'
 import config from 'core/config'
-import resource from 'core/resource'
-import logger from 'core/middleware/logger'
-import responseTime from 'core/middleware/response-time'
-import sender from 'core/middleware/sender'
-import noSlash from 'core/middleware/no-slash'
-import mailer from 'core/middleware/mailer'
-import routes from 'app/routes'
+import { logo } from 'core/vulcan'
+import { db } from 'core/bookshelf'
+import app from 'core/app'
 
-const app = koa()
-const router = new Router()
+const timeout = 3000
+export default (port, banner, cb = () => {}) => {
+  const server = app.listen(port, () => {
+    if (banner) {
+      console.log(logo)
+      console.log(`  ${repeat('-', 80)}\n`)
+    }
+    console.log(`  Started ${chalk.gray(config.get('app.name', 'your app'))} in ${chalk.cyan(env.get('node_env', 'development'))} mode at ${chalk.yellow(process.cwd())}`)
+    console.log(`  You can view it by going to ${chalk.blue(`http://localhost:${port}`)} in your browser.`)
+    console.log(`  Press ${chalk.cyan('<CTRL> + <C>')} at any time to shut down Vulcan server.\n`)
 
-app.name = config.get('app.name', 'vulcan-app')
-app.env = env.get('node_env', 'development')
-app.proxy = config.get('app.proxy', false)
-app.subdomainOffset = config.get('app.subdomainOffset', 2)
+    cb()
+  })
 
-router.resource = resource.bind(router)
+  process.on('SIGINT', () => {
+    console.log(`\n  ${chalk.red('Shutting down server.')}\n`)
+    db.destroy()
+    server.close((e) => process.exit(1))
 
-routes.call(router)
-
-app.use(responseTime())
-if (config.get('logs.enabled', true)) {
-  app.use(logger(config.get('logs.format'), config.get('logs.options')))
+    setTimeout(() => {
+      console.log(`  ${chalk.red(`Could not close server in time (${timeout}ms), forcefully shutting down.`)}\n`)
+      process.exit(1)
+    }, timeout).unref()
+  })
+  return server
 }
-app.use(mailer(config.get('mail'), config.get('app.views')))
-app.use(methodOverride('_method'))
-app.use(views(resolve('app/views'), config.get('app.views')))
-app.use(noSlash())
-app.use(conditionalGet())
-app.use(eTag())
-app.use(compress())
-app.use(bodyParser())
-app.use(helmet())
-app.use(cors())
-app.use(sender())
-
-readdirSync(resolve('app/hooks'))
-  .map((file) => require(resolve(`app/hooks/${file}`)))
-  .map((hook) => hook.call(app))
-
-app.use(router.routes())
-app.use(router.allowedMethods())
-
-app.stack = router.stack
-
-export default app

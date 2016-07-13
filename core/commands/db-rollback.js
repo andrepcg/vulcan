@@ -4,7 +4,7 @@ import { db } from 'core/bookshelf'
 export const command = 'db:rollback'
 export const description = 'rollback the latest database migrations'
 
-export const action = (done) => () => {
+export const action = () => () => {
   db.migrate.rollback().spread((batch, migrations) => {
     if (migrations.length === 0) {
       console.log('Already at base migration')
@@ -12,6 +12,6 @@ export const action = (done) => () => {
       console.log(`Batch ${batch} ran ${migrations.length} migrations:`)
       migrations.map((file) => console.log(basename(file, '.js')))
     }
-    done()
+    db.destroy()
   })
 }

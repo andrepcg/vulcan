@@ -1,24 +1,14 @@
 #!/usr/bin/env node
 
+// ============================ TEMPORARY FIX ==========================
+// == This is because gulp 3.x uses graceful-fs 3.x which throws a    ==
+// == deprecation warning: https://github.com/gulpjs/gulp/issues/1571 ==
+// == We do this to stop it from mucking up our output.               ==
+// == Once we incorporate Gulp 4.x into Vulcan this will be removed.  ==
+// =====================================================================
+process.noDeprecation = true                                       // ==
+// =====================================================================
+
 require('babel-core/register')()
 require('app-module-path').addPath(require('path').resolve(__dirname))
-
-const program = require('commander')
-const { db } = require('core/bookshelf')
-const commands = require('core/commands')
-program.version(require('core/vulcan').version, '-v, --version')
-
-commands.map((cmd) => {
-  const command = program.command(cmd.command)
-  command.description(cmd.description)
-  if (cmd.options) {
-    cmd.options.map((opt) => command.option(opt.flags, opt.description, opt.default))
-  }
-  command.action(cmd.action(db.destroy))
-})
-
-program.parse(process.argv)
-
-if (!program.args.length) {
-  program.help()
-}
+require('core/cli')

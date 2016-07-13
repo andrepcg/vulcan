@@ -6,9 +6,8 @@
 
 ## Install
 ```sh
-$ git clone https://github.com/aniftyco/vulcan.git my-app
-$ cd my-app
-$ npm install
+$ npm install --global @vulcan/cli
+$ vulcan make my-app
 ```
 
 ## Intro
@@ -17,7 +16,7 @@ $ npm install
 ## Getting Started
 Out of the box Vulcan is setup to use sqlite so that you don't have to worry about picking a database right away. Worry about building your application.
 
-After you have ran `npm install` you should have a fully usable install of Vulcan already. Just run `npm run start` to kick off the start command (which is just `node vulcan start`) and you should be greeted with the Vulcan startup screen. Now you can open your browser to the address the screen gives you and you'll see our Welcome page. Welcome to Vulcan. :)
+After you have ran `vulcan make` you should have a fully usable install of Vulcan already. Just run `vulcan start` to kick off the start command and you should be greeted with the Vulcan startup screen. Now you can open your browser to the address the screen gives you and you'll see our Welcome page. Welcome to Vulcan. :)
 
 **Vulcan** is setup in the typical MVC style, you have Models (`app/models/`), Views (`app/views/`) and Controllers (`app/controllers/`). The whole application can be configured in the `app/config/` directory. This configuration setup is setup to load the base config files for every environment, and then the sub environment folders are merged in based on `NODE_ENV` environment variable. This allows you to fine grain change just the things you need in `development` or `test` environments.
 
